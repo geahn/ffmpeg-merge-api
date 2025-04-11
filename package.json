@@ -1,17 +1,18 @@
 {
   "name": "ffmpeg-merge-api",
   "version": "1.0.0",
-  "description": "API para mesclar áudios",
+  "description": "API para unir dois arquivos de áudio usando FFmpeg",
   "main": "merge.js",
   "scripts": {
-    "start": "node merge.js"
+    "start": "npm install --legacy-peer-deps && node merge.js"
   },
   "dependencies": {
     "fluent-ffmpeg": "^2.1.2",
-    "ffmpeg-installer": "^5.0.0",
-    "node-fetch": "^2.6.1",
+    "@ffmpeg-installer/ffmpeg": "^1.0.2",
+    "node-fetch": "^3.2.0",
     "uuid": "^8.3.2",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "fs": "0.0.1-security"
   },
   "engines": {
     "node": "16.x"
