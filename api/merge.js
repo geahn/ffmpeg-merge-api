@@ -16,8 +16,12 @@ export default async function handler(req, res) {
   try {
     const { url1, url2 } = req.body;
 
-    const input1 = `/tmp/temp_${uuidv4()}.wav`;
-    const input2 = `/tmp/temp_${uuidv4()}.wav`;
+    // Detecta extensão real baseada na URL (aceita .mp3 e .wav)
+    const ext1 = path.extname(url1).toLowerCase().includes('mp3') ? '.mp3' : '.wav';
+    const ext2 = path.extname(url2).toLowerCase().includes('mp3') ? '.mp3' : '.wav';
+
+    const input1 = `/tmp/temp_${uuidv4()}${ext1}`;
+    const input2 = `/tmp/temp_${uuidv4()}${ext2}`;
     const output = `/tmp/merged_${uuidv4()}.mp3`;
 
     const downloadFile = async (url, filename) => {
@@ -33,6 +37,7 @@ export default async function handler(req, res) {
       ffmpeg()
         .input(input1)
         .input(input2)
+        .audioCodec('libmp3lame') // garante que o output seja mp3
         .on('end', resolve)
         .on('error', reject)
         .mergeToFile(output, '/tmp');
@@ -42,6 +47,7 @@ export default async function handler(req, res) {
     res.setHeader('Content-Type', 'audio/mpeg');
     res.send(mergedBuffer);
 
+    // Limpa os arquivos temporários
     fs.unlinkSync(input1);
     fs.unlinkSync(input2);
     fs.unlinkSync(output);
