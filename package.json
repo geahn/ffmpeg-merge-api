@@ -1,11 +1,19 @@
 {
   "name": "ffmpeg-merge-api",
   "version": "1.0.0",
-  "type": "module",
+  "description": "API para mesclar áudios",
+  "main": "merge.js",
+  "scripts": {
+    "start": "node merge.js"
+  },
   "dependencies": {
-    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "fluent-ffmpeg": "^2.1.2",
-    "node-fetch": "^3.3.1",
-    "uuid": "^9.0.0"
+    "ffmpeg-installer": "^5.0.0",
+    "node-fetch": "^2.6.1",
+    "uuid": "^8.3.2",
+    "path": "^0.12.7"
+  },
+  "engines": {
+    "node": "16.x"
   }
 }
