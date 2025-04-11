@@ -16,12 +16,8 @@ export default async function handler(req, res) {
   try {
     const { url1, url2 } = req.body;
 
-    // Detecta extensão real baseada na URL (aceita .mp3 e .wav)
-    const ext1 = path.extname(url1).toLowerCase().includes('mp3') ? '.mp3' : '.wav';
-    const ext2 = path.extname(url2).toLowerCase().includes('mp3') ? '.mp3' : '.wav';
-
-    const input1 = `/tmp/temp_${uuidv4()}${ext1}`;
-    const input2 = `/tmp/temp_${uuidv4()}${ext2}`;
+    const input1 = `/tmp/temp_${uuidv4()}.wav`;
+    const input2 = `/tmp/temp_${uuidv4()}.wav`;
     const output = `/tmp/merged_${uuidv4()}.mp3`;
 
     const downloadFile = async (url, filename) => {
@@ -37,9 +33,11 @@ export default async function handler(req, res) {
       ffmpeg()
         .input(input1)
         .input(input2)
-        .audioCodec('libmp3lame') // garante que o output seja mp3
         .on('end', resolve)
-        .on('error', reject)
+        .on('error', (err) => {
+          // Captura o erro e envia para o cliente
+          reject({ message: 'Erro ao processar os arquivos de áudio', details: err });
+        })
         .mergeToFile(output, '/tmp');
     });
 
@@ -47,13 +45,20 @@ export default async function handler(req, res) {
     res.setHeader('Content-Type', 'audio/mpeg');
     res.send(mergedBuffer);
 
-    // Limpa os arquivos temporários
     fs.unlinkSync(input1);
     fs.unlinkSync(input2);
     fs.unlinkSync(output);
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Erro interno ao mesclar os áudios' });
+    // Verifica se o erro é um objeto com detalhes
+    if (err.details) {
+      res.status(500).json({
+        error: err.message,
+        details: err.details, // Exibe os detalhes do erro
+      });
+    } else {
+      // Em caso de erro genérico, apenas exibe uma mensagem genérica
+      res.status(500).json({ error: 'Erro interno ao mesclar os áudios' });
+    }
   }
 }
