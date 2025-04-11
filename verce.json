@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "api/merge.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/api/merge", "dest": "api/merge.js" }
+  ]
+}
