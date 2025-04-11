@@ -19,6 +19,10 @@ export default async function handler(req, res) {
   try {
     const { url1, url2 } = req.body;
 
+    if (!url1 || !url2) {
+      return res.status(400).json({ error: 'As URLs dos arquivos de áudio são necessárias' });
+    }
+
     // Gerar os caminhos para os arquivos temporários
     const input1 = path.join(TEMP_DIR, `temp_${uuidv4()}.wav`);
     const input2 = path.join(TEMP_DIR, `temp_${uuidv4()}.wav`);
@@ -26,6 +30,9 @@ export default async function handler(req, res) {
 
     const downloadFile = async (url, filename) => {
       const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Falha ao baixar o arquivo de áudio: ${url}`);
+      }
       const buffer = await response.buffer();
       fs.writeFileSync(filename, buffer);
     };
